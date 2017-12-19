@@ -10,6 +10,8 @@ class SqlSet
 			"
 				SELECT data.serial, data.title
 				FROM `crawler_data_cleaned` data
+				WHERE dt > '2017-12-09'
+				ORDER BY serial ASC;
 			"
 		)
 	end
@@ -17,7 +19,7 @@ class SqlSet
 
 	def insert(client,a_id,w_idx,w,pos,pos1,pos2,pos3,etc1,etc2,etc3,etc4,etc5)
 		client.query(
-			" INSERT INTO test_title_mecab (
+			" INSERT INTO title_mecab (
 				article_id
 				, word_index
 				, word
@@ -32,9 +34,9 @@ class SqlSet
 				, etc5
 				)
 			VALUES(
-				,#{a_id}
+				#{a_id}
 				,#{w_idx}
-				,\"#{w}\"
+				,\'#{w}\'
 				,\"#{pos}\"
 				,CASE WHEN \"#{pos1}\" = \"*\" THEN \"\" ELSE \"#{pos1}\" END
 				,CASE WHEN \"#{pos2}\" = \"*\" THEN \"\" ELSE \"#{pos2}\" END
@@ -58,30 +60,32 @@ end
 titles = @sql.select(@client)
 
 titles.each do |title|
+	puts title
 	a_id = 0
-	,w_idx = 0
-	,w = ""
-	,pos = ""
-	,pos1 = ""
-	,pos2 = ""
-	,pos3 = ""
-	,etc1 = ""
-	,etc2 = ""
-	,etc3 = ""
-	,etc4 = ""
-	,etc5 = ""
+	w_idx = 0
+	w = ""
+	pos = ""
+	pos1 = ""
+	pos2 = ""
+	pos3 = ""
+	etc1 = ""
+	etc2 = ""
+	etc3 = ""
+	etc4 = ""
+	etc5 = ""
 	
 	begin
 		a_id = title["serial"]
 		
 		natto = Natto::MeCab.new
 		i = 0
-		natto.parse(title) do |n|
+		natto.parse(title["title"]) do |n|
 		  feature = []
 		  feature = n.feature.split(",")
 		  
 		  w_idx = i
 		  w = n.surface
+		  puts w
 		  pos = feature[0]
 		  pos1 = feature[1]
 		  pos2 = feature[2]
@@ -91,12 +95,15 @@ titles.each do |title|
 		  etc3 = feature[6]
 		  etc4 = feature[7]
 		  etc5 = feature[8]
-		  
-		  @sql.insert(a_id, w_idx, w, pos, pos1, pos2, pos3, etc1, etc2, etc3, etc4, etc5)
-		  
+		  begin 
+		  	@sql.insert(@client,a_id, w_idx, w, pos, pos1, pos2, pos3, etc1, etc2, etc3, etc4, etc5)
+		  rescue => e
+			puts e
+		  end
 		  i = i + 1
 		end
 	rescue => e
+		puts e
 	end
 
 
