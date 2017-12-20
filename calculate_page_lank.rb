@@ -7,6 +7,7 @@ class Matrix
   def []=(i,j,x)
     @rows[i][j]=x
   end
+end
 
 class SqlSet
 	def select(client)
@@ -30,25 +31,13 @@ class SqlSet
 		)
 	end
 
-	def insert(client,m_n, u, t, b, c_n, e1, e5)
+	def insert(client,pagerank)
 		client.query(
-			" INSERT INTO crawler_raw_data (
-				  media_name
-				, url
-				, title
-				, body
-				, crawler_name
-				, etc1
-				, etc5
+			" INSERT INTO  title_mecab_pos_3gram_matrix_PageRank(
+				  pagerank
 				)
 			VALUES(
-				\"#{m_n}\"
-				,\"#{u}\"
-				,\"#{t}\"
-				,\"#{b}\"
-				,\"#{c_n}\"
-				,\"#{e1}\"
-				,\"#{e5}\"
+				#{pagerank}
 				)
 			 "
 		)
@@ -61,18 +50,21 @@ end
 
 mtxN = 1094
 
-cnt = 1
-results.each do |mtx|
+@sql = SqlSet.new
+results = @sql.select(@client)
 
-	b = Matrix.zero(mtxN)
-	
+cnt = 1
+
+b = Matrix.zero(mtxN)
+
+results.each do |mtx|	
 	b[mtx["pre"] - 1, mtx["post"] -1 ] = mtx["Bij"] / mtx["sumBij"]
 	cnt = cnt + 1
 	puts cnt
 end
 
 
-if mtxN^2 = cnt then
+#if mtxN^2 == cnt then
 	a = b
 	b = b.t
 
@@ -84,5 +76,11 @@ if mtxN^2 = cnt then
 	puts "#eigenValue##########"
 	puts D[0,0]
 	puts "#eigenVectors##########"
-	puts ut * a
+	x = ut * a
+	puts x
+
+x.each do |xi|
+	@sql.insert(@client,xi)
 end
+	
+#end
