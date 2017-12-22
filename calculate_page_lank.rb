@@ -1,6 +1,6 @@
 require 'mysql2'
 require 'matrix'
-
+#http://www.moge.org/okabe/temp/eigen/node2.html
 #######################
 
 class Matrix
