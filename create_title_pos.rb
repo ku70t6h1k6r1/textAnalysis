@@ -104,6 +104,7 @@ class SqlSet
 				FROM crawler.title_mecab_pos_3gram
 				WHERE pos_index = #{pos_index};
 			"
+			)
 	end
 
 	def selectWords(client,pos_index)
@@ -115,6 +116,7 @@ class SqlSet
 				FROM crawler.title_mecab_pos_3gram
 				WHERE pos_index = #{pos_index};
 			"
+			)
 	end
 	
 end
@@ -123,7 +125,7 @@ end
 #######################
 
 class Title
-	def initialize
+	def initialize()
 		account = Id.new
 	
 		@client = Mysql2::Client.new(:host => account.ip, :username => account.user, :password => account.pass, :database => account.db)
@@ -135,7 +137,7 @@ class Title
 
 		posIndex = []
 		posPageRank =[]
-		dice = new Dice
+		dice = Dice.new
 
 		results.each do |row|	
 			posIndex.push(row["pre_index"])
@@ -148,24 +150,25 @@ class Title
 		loop{
 			postPosIndex = []
 			postPosPageRank =[]
-			dice2 = new Dice
+			dice2 = Dice.new
 			
 			read = @sql.select(@client, curretIndex)
 			read.each do |row|
-				postPosIndex.push(row["pre_index"])
-				postPosPageRank.push(row["pre_pagerank"])
+				postPosIndex.push(row["post_index"])
+				postPosPageRank.push(row["post_pagerank"])
 			end
 			if postPosIndex.length > 0 then
 				curretIndex = postPosIndex[dice2.shake(postPosPageRank)]
 				titlePsOS.push(curretIndex)
+				puts curretIndex
 			else
 				break
 			end
 		}
 
-		title = []
-		titlePos = []
-		#ç≈èâÇæÇØpos1+pos2+pos3Ç†Ç∆ÇÕpos3ÇæÇØ
+		@title = []
+		@titlePos = []
+	
 		count = 0
 		titlePsOS.each do |pos|
 			if count == 0 then
@@ -180,16 +183,19 @@ class Title
 				words.push(row["word"])
 				psos.push(row["pos"])
 			end
-			title.push(words[Random.new.rand(words.length)])
-			titlePos.push(psos[0])
+			@title.push(words[Random.new.rand(words.length)])
+			@titlePos.push(psos[0])
+			count += 1
 		end
 	end
 	
 	def title
-		return title
+		output = @title.join("/")
+		return output
 	end
 	
 	def titlePos
-		return titlePos
+		output = @titlePos.join("/")
+		return output
 	end
 end
