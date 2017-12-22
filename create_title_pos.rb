@@ -1,5 +1,7 @@
 require 'mysql2'
 require 'matrix'
+require './config/info.rb'
+
 
 #######################
 
@@ -122,7 +124,9 @@ end
 
 class Title
 	def initialize
-		@client = Mysql2::Client.new(:host => "", :username => "", :password => "", :database => "")
+		account = Id.new
+	
+		@client = Mysql2::Client.new(:host => account.ip, :username => account.user, :password => account.pass, :database => account.db)
 		@sql = SqlSet.new
 		results = @sql.selectFirst(@client)
 
