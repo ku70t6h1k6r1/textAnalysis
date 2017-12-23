@@ -12,6 +12,13 @@ class Matrix
 end
 
 class Dice
+	def softmax(a, t)
+		for i in 0..a.length-1
+			a[i] = Math.exp(a[i] * 1.0 /t)
+		end
+		return ( Vector.elements(a)  / a.inject(:+) ).to_a
+	end
+
 	def shake(array)
 		array = ( Vector.elements(array)  / array.inject(:+) ).to_a
 		random = Random.new.rand(1e8)/1e8.to_f		
@@ -144,6 +151,7 @@ class Title
 			posPageRank.push(1.0 / row["pre_pagerank"])
 		end
 
+		posPageRank = dice.softmax(posPageRank,0.8)
 		curretIndex = posIndex[dice.shake(posPageRank)]
 		titlePsOS.push(curretIndex)
 
@@ -158,9 +166,9 @@ class Title
 				postPosPageRank.push(row["post_pagerank"])
 			end
 			if postPosIndex.length > 0 then
+				postPosPageRank = dice2.softmax(postPosPageRank,1.5)
 				curretIndex = postPosIndex[dice2.shake(postPosPageRank)]
-				titlePsOS.push(curretIndex)
-				puts curretIndex
+				titlePsOS.push(curretIndex)				
 			else
 				break
 			end
