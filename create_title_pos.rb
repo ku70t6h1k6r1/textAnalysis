@@ -144,30 +144,43 @@ class Title
 
 		posIndex = []
 		posPageRank =[]
+		posPageRankRaw = []	
+	
 		dice = Dice.new
+		@pagerank = []
 
 		results.each do |row|	
 			posIndex.push(row["pre_index"])
 			posPageRank.push(1.0 / row["pre_pagerank"])
+			posPageRankRaw.push(row["pre_pagerank"])
 		end
 
-		posPageRank = dice.softmax(posPageRank,0.8)
-		curretIndex = posIndex[dice.shake(posPageRank)]
+		posPageRank = dice.softmax(posPageRank,0.56)
+		index = dice.shake(posPageRank)
+
+		@pagerank.push(posPageRankRaw[index])
+		curretIndex = posIndex[index]
 		titlePsOS.push(curretIndex)
 
 		loop{
 			postPosIndex = []
 			postPosPageRank =[]
+                       	postPosPageRankRaw =[]
+
 			dice2 = Dice.new
 			
 			read = @sql.select(@client, curretIndex)
 			read.each do |row|
 				postPosIndex.push(row["post_index"])
 				postPosPageRank.push(row["post_pagerank"])
+				postPosPageRankRaw.push(row["post_pagerank"])
 			end
 			if postPosIndex.length > 0 then
 				postPosPageRank = dice2.softmax(postPosPageRank,1.5)
-				curretIndex = postPosIndex[dice2.shake(postPosPageRank)]
+				index2 = dice2.shake(postPosPageRank)
+
+				@pagerank.push(postPosPageRankRaw[index2])
+				curretIndex = postPosIndex[index2]
 				titlePsOS.push(curretIndex)				
 			else
 				break
@@ -205,5 +218,10 @@ class Title
 	def titlePos
 		output = @titlePos.join("/")
 		return output
+	end
+
+	def totalPageRank
+		output =  ( Vector.elements(@pagerank)  / @pagerank.length ).to_a 
+		return output.inject(:+) 
 	end
 end

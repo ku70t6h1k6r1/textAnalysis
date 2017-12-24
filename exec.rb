@@ -19,7 +19,7 @@ class SqlSet
 
 	def insert(client,a_id,w_idx,w,pos,pos1,pos2,pos3,etc1,etc2,etc3,etc4,etc5)
 		client.query(
-			" INSERT INTO test_body_mecab (
+			" INSERT INTO body_mecab (
 				article_id
 				, word_index
 				, word
@@ -61,7 +61,7 @@ account = Id.new
 titles = @sql.select(@client)
 
 titles.each do |title|
-	puts title
+	
 	a_id = 0
 	w_idx = 0
 	w = ""
@@ -77,7 +77,7 @@ titles.each do |title|
 	
 	begin
 		a_id = title["serial"]
-		
+		puts a_id		
 		natto = Natto::MeCab.new
 		i = 0
 		natto.parse(title["body"]) do |n|
@@ -86,7 +86,7 @@ titles.each do |title|
 		  
 		  w_idx = i
 		  w = n.surface
-		  puts w
+		  
 		  pos = feature[0]
 		  pos1 = feature[1]
 		  pos2 = feature[2]
