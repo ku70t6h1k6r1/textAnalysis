@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'natto'
 require 'mysql2'
+require './config/info.rb'
 
 #######################
 
@@ -53,8 +54,9 @@ end
 
 
 #######################
-@client = Mysql2::Client.new(:host => "", :username => "", :password => "", :database => "")
-
+account = Id.new
+	
+@client = Mysql2::Client.new(:host => account.ip, :username => account.user, :password => account.pass, :database => account.db)
 @sql = SqlSet.new
 titles = @sql.select(@client)
 
