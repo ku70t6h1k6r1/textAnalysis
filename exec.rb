@@ -8,9 +8,8 @@ class SqlSet
 	def select(client)
 		client.query(
 			"
-				SELECT data.serial, data.title
+				SELECT data.serial, data.body
 				FROM `crawler_data_cleaned` data
-				WHERE dt > '2017-12-09'
 				ORDER BY serial ASC;
 			"
 		)
@@ -19,7 +18,7 @@ class SqlSet
 
 	def insert(client,a_id,w_idx,w,pos,pos1,pos2,pos3,etc1,etc2,etc3,etc4,etc5)
 		client.query(
-			" INSERT INTO title_mecab (
+			" INSERT INTO test_body_mecab (
 				article_id
 				, word_index
 				, word
@@ -36,16 +35,16 @@ class SqlSet
 			VALUES(
 				#{a_id}
 				,#{w_idx}
-				,\'#{w}\'
+				,\"#{w}\"
 				,\"#{pos}\"
-				,CASE WHEN \"#{pos1}\" = \"*\" THEN \"\" ELSE \"#{pos1}\" END
-				,CASE WHEN \"#{pos2}\" = \"*\" THEN \"\" ELSE \"#{pos2}\" END
-				,CASE WHEN \"#{pos3}\" = \"*\" THEN \"\" ELSE \"#{pos3}\" END
-				,CASE WHEN \"#{etc1}\" = \"*\" THEN \"\" ELSE \"#{etc1}\" END
-				,CASE WHEN \"#{etc2}\" = \"*\" THEN \"\" ELSE \"#{etc2}\" END
-				,CASE WHEN \"#{etc3}\" = \"*\" THEN \"\" ELSE \"#{etc3}\" END
-				,CASE WHEN \"#{etc4}\" = \"*\" THEN \"\" ELSE \"#{etc4}\" END
-				,CASE WHEN \"#{etc5}\" = \"*\" THEN \"\" ELSE \"#{etc5}\" END
+				,\"#{pos1}\"
+				,\"#{pos2}\"
+				,\"#{pos3}\"
+				,\"#{etc1}\"
+				,\"#{etc2}\"
+				,\"#{etc3}\"
+				,\"#{etc4}\"
+				,\"#{etc5}\"
 				)
 			 "
 		)
@@ -79,7 +78,7 @@ titles.each do |title|
 		
 		natto = Natto::MeCab.new
 		i = 0
-		natto.parse(title["title"]) do |n|
+		natto.parse(title["body"]) do |n|
 		  feature = []
 		  feature = n.feature.split(",")
 		  
