@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'natto'
 require 'mysql2'
+require './config/info.rb'
 
 #######################
 
@@ -11,7 +12,7 @@ class SqlSet
 			"
 				SELECT data.serial, data.body
 				FROM `crawler_data_cleaned` data
-                WHERE serial= 1
+		                
 				ORDER BY serial ASC;
 			"
 		)
@@ -29,6 +30,7 @@ bodies = @sql.select(@client)
 corpus = []
 
 bodies.each do |body|
+	puts body["serial"]
 	begin
 		natto = Natto::MeCab.new
 
@@ -46,7 +48,7 @@ end
 
 output = corpus.join(" ")
 
-File.open("test.txt", "w") do |f| 
+File.open("/media/HD_3TB/kubota/corpus/toshidensetsu_corpus.txt", "w") do |f| 
   f.puts(output)
 end
 
