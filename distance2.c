@@ -9,6 +9,8 @@ const long long max_w = 50;              // max length of vocabulary entries
 
 int main(int argc, char **argv) {
   FILE *f;
+  FILE *fo;
+
   char st1[max_size];
   char *bestw[N];
   char file_name[max_size], st[100][max_size];
@@ -51,5 +53,9 @@ int main(int argc, char **argv) {
     for (a = 0; a < size; a++) M[a + b * size] /= len;
   }
   fclose(f);
+  
+  f2 = fopen("test_vector.txt", "w");
+  fprintf(f2, "%s ¥n", vocab)
+  fclose(f2);
   return 0;
 }
