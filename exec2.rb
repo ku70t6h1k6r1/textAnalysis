@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 require 'natto'
 require 'mysql2'
+require './config/info.rb'
 
 #######################
 
 class SqlSet
 	def initInsert()
 			query = "
-				INSERT INTO body_mecab2 (
+				INSERT INTO test_body_mecab (
 				article_id
 				, word_index
 				, word
@@ -49,8 +50,9 @@ class SqlSet
 	def select(client)
 		client.query(
 			"
-				SELECT data.serial, data.title
+				SELECT data.serial, data.body
 				FROM `crawler_data_cleaned` data
+				WHERE data.serial < 10
 				ORDER BY serial ASC;
 			"
 		)
@@ -87,19 +89,19 @@ titles.each do |title|
 	
 	begin
 		a_id = title["serial"]
-		puts a_id
+		
 		natto = Natto::MeCab.new
 		i = 0
 		
 		query = @sql.initInsert
-		
+				
 		natto.parse(title["body"]) do |n|
 		  feature = []
 		  feature = n.feature.split(",")
 		  
 		  w_idx = i
-		  w = n.surface
-		  
+		  w = n.surface		  
+
 		  pos = feature[0]
 		  pos1 = feature[1]
 		  pos2 = feature[2]
@@ -112,15 +114,18 @@ titles.each do |title|
 		  
 		  query += @sql.addValues(query,a_id, w_idx, w, pos, pos1, pos2, pos3, etc1, etc2, etc3, etc4, etc5)
 		  query += ","
-		  
+
 		  i = i + 1
+		  puts i
 		end
-		  begin
-		  	query = query.slice(0, query.length - 2)
+		begin
+			query = query.chop
+			query += ";"
+			puts query
 		  	@sql.insert(@client,query)
-		  rescue => e
+		rescue => e
 			puts e
-		  end
+		end
 	rescue => e
 		puts e
 	end
