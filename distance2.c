@@ -19,6 +19,7 @@ int main(int argc, char **argv) {
   char ch;
   float *M;
   char *vocab;
+  char *ovocab;
   if (argc < 2) {
     printf("Usage: ./distance <FILE>\nwhere FILE contains word projections in the BINARY FORMAT\n");
     return 0;
@@ -54,8 +55,10 @@ int main(int argc, char **argv) {
   }
   fclose(f);
   
-  f2 = fopen("test_vector.txt", "w");
-  fprintf(f2, "%s ¥n", vocab)
-  fclose(f2);
+  fo = fopen("test_vector.txt", "w");
+  for (b = 0; b < words; b++) {
+       fprintf(fo,"%50s\n", &vocab[b * max_w]); 
+  }
+  fclose(fo);
   return 0;
 }
